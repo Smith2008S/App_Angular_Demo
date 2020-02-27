@@ -6,5 +6,4 @@ applications:
   buildpack: sdk-for-nodejs
   command: npm start
   memory: 256M
-  domain: not-used.net
-  host: not-used
+  host: AppangularDem

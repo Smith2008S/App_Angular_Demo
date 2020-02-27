@@ -1,23 +1,22 @@
-FROM node:8-stretch
+FROM node:latest as node
 
-# Change working directory
+ARG ENV=prod
+ARG APP=listas
+
+ENV ENV ${ENV}
+ENV APP ${APP}
+
 WORKDIR /app
+COPY ./ /app/
 
-# Update packages and install dependency packages for services
-RUN apt-get update \
- && apt-get dist-upgrade -y \
- && apt-get clean \
- && echo 'Finished installing dependencies'
+# Instala y construye el Angular App
+RUN npm ci
+RUN npm run build --prod
+RUN mv /app/dist/${APP}/* /app/dist/
 
-# Install npm production packages
-COPY package.json /app/
-RUN cd /app; npm install --production
+# Angular app construida, la vamos a hostear un server production, este es Nginx
 
-COPY . /app
+FROM nginx:1.13.8-alpine
 
-ENV NODE_ENV production
-ENV PORT 3000
-
-EXPOSE 3000
-
-CMD ["npm", "start"]
+COPY --from=node /app/dist/ /usr/share/nginx/html
+COPY ./nginx.conf /etc/nginx/conf.d/default.conf
