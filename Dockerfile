@@ -11,7 +11,7 @@ COPY ./ /app/
 
 # Instala y construye el Angular App
 RUN npm install
-RUN npm build --prod
+RUN ng build --prod
 RUN mv /app/dist/${APP}/* /app/dist/
 
 # Angular app construida, la vamos a hostear un server production, este es Nginx
